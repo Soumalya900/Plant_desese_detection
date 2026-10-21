@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LeafCheck | Plant disease check from a leaf photo</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Public+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header><div class="wrap bar">
+<a class="logo" href="#"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="6" fill="var(--brand)"/><path d="M8 24C8 14 14 8 24 8c0 10-6 16-16 16z" fill="var(--bg)"/><path d="M9 23L19 13" stroke="var(--brand)" stroke-width="1.6"/></svg>LeafCheck</a>
+</div></header>
+
+<main data-view="home">
+<div class="wrap">
+<section class="hero">
+<div>
+<h1>Upload a leaf photo and find out what is wrong with the plant.</h1>
+<p class="lead">LeafCheck names the most likely disease from the spots, patches or discoloration on one leaf, then lists what to do next.</p>
+</div>
+<div class="frame">
+<div class="drop" id="drop">
+<div id="empty">
+<strong>Add a photo of one affected leaf</strong>
+<input class="sr" type="file" id="file" accept="image/jpeg,image/png,image/webp,image/jpg">
+<div class="pick">
+<label class="btn" for="file">Choose photo</label>
+<input class="sr" type="file" id="cam" accept="image/*" capture="environment">
+<button type="button" class="btn alt" id="btnTakePhoto">Take photo</button>
+</div>
+<small>JPG, PNG or WebP, up to 10 MB.<span class="dd"> You can also drop a file here.</span></small>
+</div>
+<img id="prev" alt="Your uploaded leaf photo" hidden>
+</div>
+
+<!-- Benchmark Test Samples Picker -->
+<div class="sample-pick-wrap">
+<div class="sample-pick-title">Or test with a benchmark leaf sample:</div>
+<div class="sample-pick-grid" id="samplesCarousel">
+<span style="font-size:.85rem;color:var(--muted)">Loading benchmark leaf samples...</span>
+</div>
+</div>
+
+<p class="err" id="err" role="alert"></p>
+<div class="row">
+<button class="btn" id="go" disabled>Check this leaf</button>
+<button class="btn alt" id="clear" hidden>Remove photo</button>
+</div>
+</div>
+</section>
+</div>
+
+<section id="result" hidden><div class="wrap">
+<div class="note" id="statusNote"><b>Analysis complete.</b> Review your plant pathology diagnosis report and action steps below.</div>
+<div class="report">
+<div>
+<img id="prev2" alt="Uploaded leaf specimen">
+<p class="latin" style="margin-top:10px;font-size:.9rem" id="specimenLabel">Your specimen photo</p>
+</div>
+<div>
+<p style="margin:0;color:var(--muted)">Most likely diagnosis</p>
+<p class="name" id="resDiseaseName">Early blight</p>
+<p class="latin" id="resScientificName">Alternaria solani, on tomato</p>
+
+<div class="meter" role="img" aria-label="Match strength" id="resMeter">
+<i class="on"></i><i class="on"></i><i class="on"></i>
+</div>
+<p style="font-size:.9rem;color:var(--muted)" id="resMatchText">Match strength: High (92% confidence)</p>
+
+<h3>Pathology & Symptoms</h3>
+<p id="resSymptoms">Brown spots with concentric target rings starting on foliage. Leaves around lesions show chlorotic yellowing.</p>
+
+<h3>What to do now</h3>
+<ol id="resTreatmentList">
+<li>Remove and dispose of severely affected leaves immediately.</li>
+<li>Water at the base of the plant to avoid keeping leaves wet.</li>
+<li>Apply recommended copper or Mancozeb fungicide spray according to pack instructions.</li>
+<li>Re-inspect the crop after 7 days for new symptoms.</li>
+</ol>
+
+<h3>Diagnostic Parameters</h3>
+<ul id="resParamsList">
+<li><strong>Disease Type:</strong> <span id="resDiseaseType">Fungal</span></li>
+<li><strong>Affected Area:</strong> <span id="resAffectedArea">Leaf Foliage</span></li>
+<li><strong>Severity Level:</strong> <span id="resSeverity">Moderate</span></li>
+<li><strong>Action Level:</strong> <span id="resAction">Treatment Advised</span></li>
+</ul>
+
+<h3>Other possible causes evaluated</h3>
+<ul id="resTopPredictions">
+<li>Septoria leaf spot</li>
+<li>Bacterial spot</li>
+</ul>
+
+<h3>Ask a local agricultural extension expert if</h3>
+<p id="resExpertAdvice">Spots reach new growth within 7 days, or more than a quarter of the plants display severe lesions.</p>
+</div>
+</div>
+</div></section>
+
+<!-- Live Camera Viewfinder Modal -->
+<div class="camera-modal-backdrop hidden" id="cameraModal" hidden>
+  <div class="camera-modal-box">
+    <div class="camera-modal-header">
+      <h3>Live Camera Viewfinder</h3>
+      <button type="button" class="btn-close-cam" id="btnCloseCam" aria-label="Close camera">&times;</button>
+    </div>
+    <div class="camera-viewport">
+      <video id="webcamVideo" autoplay playsinline muted></video>
+      <canvas id="webcamCanvas" hidden></canvas>
+      <div class="cam-overlay-guideline">
+        <div class="cam-target-box"></div>
+        <span>Position leaf inside target frame</span>
+      </div>
+    </div>
+    <div class="camera-controls">
+      <button type="button" class="btn" id="btnSnapPhoto">Snap Photo</button>
+      <button type="button" class="btn alt" id="btnCancelCam">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer><div class="wrap foot">
+<div>LeafCheck Agricultural Diagnostics &copy; 2026</div>
+</div></footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

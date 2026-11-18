@@ -163,11 +163,9 @@ def run_prediction(image: Image.Image):
     for p, idx in zip(top_probs, top_indices):
         c_name = idx_to_class.get(str(idx.item()), classes[idx.item()])
         c_info = disease_info.get(c_name, {})
-        display_name = c_info.get("disease", c_name.replace("___", " - ").replace("_", " "))
-        plant_name = c_info.get("plant", c_name.split("___")[0])
+        display_name = c_info.get("disease", c_name.split("___")[-1].replace("_", " ").strip())
         top_3.append({
             "class_raw": c_name,
-            "plant": plant_name,
             "disease": display_name,
             "confidence": round(float(p.item()) * 100, 2),
             "is_healthy": c_info.get("is_healthy", "healthy" in c_name.lower())
@@ -176,8 +174,7 @@ def run_prediction(image: Image.Image):
     # Retrieve disease advice & metadata
     info = disease_info.get(class_name, {})
     is_healthy = info.get("is_healthy", "healthy" in class_name.lower())
-    display_disease = info.get("disease", class_name.replace("___", " - ").replace("_", " "))
-    plant_name = info.get("plant", class_name.split("___")[0])
+    display_disease = info.get("disease", class_name.split("___")[-1].replace("_", " ").strip())
     disease_type = get_disease_type(class_name, display_disease)
     affected_area = get_affected_area(class_name, display_disease)
     
@@ -185,19 +182,17 @@ def run_prediction(image: Image.Image):
     severity = "None" if is_healthy else ("Moderate" if severity_raw == "Medium" else severity_raw)
     recommended_action = "Routine care & monitoring" if is_healthy else ("Immediate intervention required" if severity == "High" else "Treatment advised")
 
-    # Construct About description
+    # Construct About description without plant names
     if is_healthy:
-        about_text = f"The {plant_name} plant shows healthy, vigorous foliage with no visible signs of pathogen infection or nutritional deficiency. Regular maintenance will preserve its health."
+        about_text = "The leaf displays healthy, vigorous foliage with no visible signs of pathogen infection or nutritional deficiency. Regular maintenance will preserve optimal growth."
     else:
         symptoms_str = info.get("symptoms", "")
-        about_text = f"{display_disease} is a common {disease_type.lower()} disease that affects {plant_name} plants, causing {symptoms_str.lower() if symptoms_str else 'foliar damage'}. It can reduce yield and vitality if not managed in time."
+        about_text = f"{display_disease} is a {disease_type.lower()} infection causing {symptoms_str.lower() if symptoms_str else 'foliar damage'}. It can reduce vitality and yield if not managed in time."
 
     suggestions = get_treatment_suggestions(is_healthy, disease_type, display_disease)
 
     return {
         "success": True,
-        "class_raw": class_name,
-        "plant": plant_name,
         "disease": display_disease,
         "scientific_name": info.get("scientific_name", "N/A"),
         "is_healthy": is_healthy,
@@ -273,13 +268,21 @@ def get_samples():
 
     # Pick sample files
     sample_list = []
+    crop_prefixes = ["Apple", "Corn", "Potato", "Tomato", "Grape", "Peach", "Pepper", "Cherry", "Strawberry", "Blueberry", "Raspberry", "Soybean", "Squash", "Orange"]
     for rel_path, f in all_files[:16]:
         display_label = f.replace(".JPG", "").replace(".jpg", "").replace(".png", "")
         # Add spaces before capital letters for readability
         formatted = "".join([" " + c if c.isupper() and i > 0 and not display_label[i-1].isupper() else c for i, c in enumerate(display_label)]).strip()
+        for crop in crop_prefixes:
+            if formatted.startswith(crop + " "):
+                formatted = formatted[len(crop) + 1:].strip()
+            elif formatted.startswith(crop):
+                formatted = formatted[len(crop):].strip()
+        if not formatted or formatted.lower().startswith("healthy"):
+            formatted = "Healthy Leaf " + "".join(filter(str.isdigit, display_label))
         sample_list.append({
             "filename": rel_path,
-            "title": formatted,
+            "title": formatted.strip(),
             "url": f"/sample-image/{rel_path}"
         })
 

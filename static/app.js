@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const resAffectedArea = document.getElementById('resAffectedArea');
     const resSeverity = document.getElementById('resSeverity');
     const resAction = document.getElementById('resAction');
-    const resTopPredictions = document.getElementById('resTopPredictions');
     const resExpertAdvice = document.getElementById('resExpertAdvice');
     const specimenLabel = document.getElementById('specimenLabel');
 
@@ -313,14 +312,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // 5. Render Pathology Report
     function renderReport(data) {
         if (data.is_healthy) {
-            resDiseaseName.textContent = 'Healthy Specimen';
-            resScientificName.textContent = `${data.plant} foliage - No disease detected`;
+            resDiseaseName.textContent = 'Healthy (No Disease Detected)';
+            resScientificName.textContent = 'Foliage is healthy — no pathogen detected';
             statusNote.innerHTML = '<b>Diagnosis complete:</b> The specimen displays healthy foliage with no visible pathogen infection.';
         } else {
-            resDiseaseName.textContent = data.disease || 'Plant Disease';
-            resScientificName.textContent = data.scientific_name && data.scientific_name !== 'N/A' 
-                ? `${data.scientific_name}, on ${data.plant.toLowerCase()}` 
-                : `Pathogen infection on ${data.plant}`;
+            resDiseaseName.textContent = data.disease || 'Disease Detected';
+            resScientificName.textContent = data.scientific_name && data.scientific_name !== 'N/A' && data.scientific_name !== 'None (Healthy Foliage)'
+                ? `Causal Agent: ${data.scientific_name}` 
+                : 'Pathogen infection detected';
             statusNote.innerHTML = '<b>Diagnosis complete:</b> Automated MobileNet neural pathology report generated below.';
         }
 
@@ -383,19 +382,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (resSeverity) resSeverity.textContent = data.severity || (data.is_healthy ? 'None' : 'Moderate');
         if (resAction) resAction.textContent = data.recommended_action || (data.is_healthy ? 'Routine care' : 'Treatment advised');
 
-        // Other Possible Causes Evaluated
-        if (resTopPredictions) {
-            resTopPredictions.innerHTML = '';
-            if (data.top_predictions && data.top_predictions.length > 1) {
-                data.top_predictions.slice(1).forEach(pred => {
-                    const li = document.createElement('li');
-                    li.textContent = `${pred.disease} (${pred.confidence}% match)`;
-                    resTopPredictions.appendChild(li);
-                });
-            } else {
-                resTopPredictions.innerHTML = '<li>No secondary pathogen detected above threshold</li>';
-            }
-        }
 
         // Expert Advice Note
         if (resExpertAdvice) {

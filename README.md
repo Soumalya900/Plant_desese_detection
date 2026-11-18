@@ -1,4 +1,5 @@
 # 🌿 Plant Disease Detection (LeafCheck)
+*(Repository: `Plant_desese_detection`)*
 
 An end-to-end deep learning web application to diagnose plant diseases and nutritional deficiencies directly from leaf photographs. Powered by PyTorch, TorchVision, and Flask.
 
@@ -36,8 +37,8 @@ An end-to-end deep learning web application to diagnose plant diseases and nutri
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Soumalya900/plant-disease-detection.git
-cd plant-disease-detection
+git clone https://github.com/Soumalya900/Plant_desese_detection.git
+cd Plant_desese_detection
 ```
 
 ### 2. Set Up Virtual Environment (Recommended)
